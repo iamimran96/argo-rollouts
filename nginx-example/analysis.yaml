@@ -7,7 +7,7 @@ spec:
   args:
     - name: url
   metrics:
-    - name: ngix-smoke
+    - name: nginx-smoke
       count: 1
       provider:
         job:
