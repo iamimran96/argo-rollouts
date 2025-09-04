@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: nginx
+spec:
+  replicas: 2
+  workloadRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx
+  strategy:
+    blueGreen:
+      activeService: nginx-active
+      previewService: nginx-preview
+      autoPromotionEnabled: true
+      autoPromotionSeconds: 120
+      prePromotionAnalysis:
+        templates:
+        - templateName: nginx-smoke   # your AnalysisTemplate name
+            # clusterScope: true        # uncomment if the AnalysisTemplate is Cluster-scoped
+        args:                           # <-- move args here
+          - name: url
+            value: http://nginx-preview.default.svc.cluster.local:80

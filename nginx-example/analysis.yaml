@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: nginx-smoke
+  namespace: default   # <-- change if needed
+spec:
+  args:
+    - name: url
+  metrics:
+    - name: ngix-smoke
+      count: 1
+      provider:
+        job:
+          spec:
+            backoffLimit: 0
+            template:
+              spec:
+                restartPolicy: Never
+                containers:
+                  - name: curl
+                    image: curlimages/curl:8.10.1
+                    command: ["sh","-c"]
+                    args:
+                      - |
+                        set -e
+                        code=$(curl -s -o /dev/null -w "%{http_code}" "$URL/")
+                        echo "HTTP=$code"
+                        test "$code" -eq 200
+                    env:
+                    - name: URL
+                      value: "{{args.url}}"

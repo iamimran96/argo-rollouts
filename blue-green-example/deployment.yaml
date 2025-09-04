@@ -1,0 +1,21 @@
+# nginx-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blue-green
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: blue-green
+  template:
+    metadata:
+      labels:
+        app: blue-green
+    spec:
+      containers:
+      - name: rollouts-demo
+        image: argoproj/rollouts-demo:blue
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080

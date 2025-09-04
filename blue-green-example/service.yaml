@@ -1,0 +1,25 @@
+# nginx-active-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: blue-green-active
+spec:
+  selector:
+    app: blue-green
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+# nginx-preview-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: blue-green-preview
+spec:
+  selector:
+    app: blue-green
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

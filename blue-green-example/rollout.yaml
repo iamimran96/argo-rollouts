@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: blue-green
+spec:
+  replicas: 2
+  workloadRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: blue-green
+  strategy:
+    blueGreen:
+      activeService: blue-green-active
+      previewService: blue-green-preview
+      autoPromotionEnabled: false
