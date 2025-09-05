@@ -3,7 +3,7 @@ kind: Rollout
 metadata:
   name: blue-green-canary
 spec:
-  replicas: 2
+  replicas: 4
   workloadRef:
     apiVersion: apps/v1
     kind: Deployment
@@ -15,8 +15,8 @@ spec:
       maxSurge: '25%'
       maxUnavailable: 0
       steps:
-        - setWeight: 30
+        - setWeight: 25
         - pause:
             duration: 1h # 1 hour
-        - setWeight: 30
+        - setWeight: 25
         - pause: {} # pause indefinitely
