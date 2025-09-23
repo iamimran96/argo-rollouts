@@ -7,7 +7,7 @@ spec:
     - name: function_id
       value: "5a06fa01-b01b-4292-8b27-acd29d7b1e2c"
   metrics:
-    - name: validate-endpoint
+    - name: validate-endpoint-if-not-allow
       interval: 30s
       count: 3
       successCondition: result == false
@@ -25,3 +25,24 @@ spec:
             - key: Accept
               value: application/json
           jsonPath: "{$.allowed}" 
+
+    - name: validate-endpoint-if-allowed
+      interval: 30s
+      count: 3
+      successCondition: result == true
+      failureLimit: 1
+      provider:
+        web:
+          url: https://api-iam.dev.multiverseapp.ai/validate
+          method: POST
+          timeoutSeconds: 60
+          jsonBody: 
+            user_token: "dd86e3d4-a85c-4a81-89ef-7891bd2b3a01"
+            function_id: "7a666609-618c-4091-b5a6-4786db68f390"
+          headers:
+            - key: Content-Type
+              value: application/json
+            - key: Accept
+              value: application/json
+          jsonPath: "{$.allowed}" 
+
