@@ -8,13 +8,20 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: blue-green-canary
-  minReadySeconds: 30
-  revisionHistoryLimit: 3
   strategy:
-    canary: #Indicates that the rollout should use the Canary strategy
-      maxSurge: '50%'
+    canary:
+      analysis:
+        templates:
+        - templateName: blue-green-canary
+      maxSurge: "25%"
       maxUnavailable: 0
+      abortScaleDownDelaySeconds: 300
       steps:
+        - setWeight: 5
+        - pause: { duration: 10m }
+        - setWeight: 10
+        - pause: { duration: 10m }
+        - setWeight: 25
+        - pause: { duration: 15m }
         - setWeight: 50
-        - pause:
-            duration: 1h # 1 hour
+        - pause: { duration: 20m }

@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: blue-green-canary
+spec:
+  metrics:
+    - name: validate-endpoint
+      interval: 30s
+      count: 3
+      successCondition: result == 200
+      failureLimit: 1
+      provider:
+        web:
+          url: https://api-iam.dev.multiverseapp.ai/validate
+          method: POST
+          timeoutSeconds: 60
+          jsonBody: 
+            function_id: "5a06fa01-b01b-4292-8b27-acd29d7b1e2c"
+          headers:
+            - key: Content-Type
+              value: application/json
+            - key: Accept
+              value: application/json
