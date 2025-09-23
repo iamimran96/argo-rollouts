@@ -10,7 +10,7 @@ spec:
     - name: validate-endpoint
       interval: 30s
       count: 3
-      successCondition: result == 200
+      successCondition: result == false
       failureLimit: 1
       provider:
         web:
@@ -24,3 +24,4 @@ spec:
               value: application/json
             - key: Accept
               value: application/json
+          jsonPath: "{$.allowed}" 
