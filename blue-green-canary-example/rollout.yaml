@@ -10,12 +10,14 @@ spec:
     name: blue-green-canary
   strategy:
     canary:
+      stableService: blue-green-canary-active
+      previewService: blue-green-canary-preview
       analysis:
         templates:
         - templateName: blue-green-canary
           args:
-          - name: function_id
-            value: "5a06fa01-b01b-4292-8b27-acd29d7b1e2c"
+          - name: url
+            value: http://blue-green-canary-preview.default.svc.cluster.local
       maxSurge: "25%"
       maxUnavailable: 0
       abortScaleDownDelaySeconds: 300
