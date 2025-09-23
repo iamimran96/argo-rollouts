@@ -11,7 +11,7 @@ spec:
   strategy:
     canary:
       stableService: blue-green-canary-active
-      previewService: blue-green-canary-preview
+      canaryService: blue-green-canary-preview
       analysis:
         templates:
         - templateName: blue-green-canary
