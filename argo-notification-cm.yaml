@@ -7,6 +7,7 @@ data:
     message: |
       🚀 Canary rollout started for {{.rollout.metadata.name}} in namespace {{.rollout.metadata.namespace}}
       New revision: {{.rollout.status.currentPodHash}}
+      Canary weight: {{.rollout.status.canary.weights.canary}}%
     slack:
       attachments: |
         [{
@@ -28,13 +29,57 @@ data:
               "value": "{{.rollout.status.currentPodHash}}",
               "short": true
             },
+            {
+              "title": "Canary Weight",
+              "value": "{{.rollout.status.canary.weights.canary}}%",
+              "short": true
+            }
+          ]
+        }]
+
+  template.rollout-promoted: |
+    message: |
+      ✅ Rollout {{.rollout.metadata.name}} fully promoted to stable!
+      All canary steps completed successfully.
+      New revision: {{.rollout.status.currentPodHash}}
+    slack:
+      attachments: |
+        [{
+          "title": "✅ Canary Promoted to Stable",
+          "color": "good",
+          "fields": [
+            {
+              "title": "Rollout",
+              "value": "{{.rollout.metadata.name}}",
+              "short": true
+            },
+            {
+              "title": "Namespace",
+              "value": "{{.rollout.metadata.namespace}}",
+              "short": true
+            },
+            {
+              "title": "New Revision",
+              "value": "{{.rollout.status.currentPodHash}}",
+              "short": true
+            },
+            {
+              "title": "Image",
+              "value": "{{(index .rollout.spec.template.spec.containers 0).image}}",
+              "short": false
+            }
           ]
         }]
 
   trigger.on-rollout-canary-started: |
     - when: rollout.status.phase in ['Progressing'] and rollout.status.currentStepIndex == 0
-      oncePer: rollout.status.currentPodHash
+      oncePer: rollout.metadata.generation
       send: [rollout-canary-started]
+
+  trigger.on-rollout-promoted: |
+    - when: rollout.status.phase == 'Healthy' and rollout.status.stableRS == rollout.status.currentPodHash
+      oncePer: rollout.metadata.generation
+      send: [rollout-promoted]
 
 kind: ConfigMap
 metadata:

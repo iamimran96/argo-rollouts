@@ -4,6 +4,7 @@ metadata:
   name: blue-green-canary
   annotations:
     notifications.argoproj.io/subscribe.on-rollout-canary-started.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-promoted.slack: argocd
     #notifications.argoproj.io/subscribe.on-rollout-updated.slack: argocd
     #notifications.argoproj.io/subscribe.on-rollout-paused.slack: argocd
     #notifications.argoproj.io/subscribe.on-rollout-completed.slack: argocd
