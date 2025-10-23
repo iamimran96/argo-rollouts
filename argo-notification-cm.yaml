@@ -38,7 +38,8 @@ data:
         }]
 
   trigger.on-rollout-canary-started: |
-      when: rollout.status.currentStepIndex == 0
+    - when: rollout.status.phase in ['Progressing'] and rollout.status.currentStepIndex == 0
+      oncePer: rollout.status.currentPodHash
       send: [rollout-canary-started]
 
 kind: ConfigMap
