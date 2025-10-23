@@ -3,7 +3,12 @@ kind: Rollout
 metadata:
   name: blue-green-canary
   annotations:
-    notifications.argoproj.io/subscribe.on-rollout-canary-started.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-started.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-updated.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-completed.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-paused.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-aborted.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-step-completed.slack: argocd
 spec:
   replicas: 4
   workloadRef:
@@ -24,7 +29,7 @@ spec:
           - name: url
             value: http://blue-green-canary-preview.default.svc.cluster.local:80
       steps:
+        - setWeight: 5
+        - pause: { duration: 1m }
         - setWeight: 10
-        - pause: { duration: 1m }
-        - setWeight: 25
-        - pause: { duration: 1m }
+        - pause: { duration: 11m }
