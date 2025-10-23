@@ -29,7 +29,6 @@ spec:
           - name: url
             value: http://blue-green-canary-preview.default.svc.cluster.local:80
       steps:
-        - setCanaryScale: { weight: 5 }
         - setWeight: 5
         - pause: { duration: 1m }
         - setWeight: 10
