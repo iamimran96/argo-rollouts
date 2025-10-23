@@ -7,7 +7,6 @@ data:
     message: |
       🚀 Canary rollout started for {{.rollout.metadata.name}} in namespace {{.rollout.metadata.namespace}}
       New revision: {{.rollout.status.currentPodHash}}
-      Canary weight: {{.rollout.status.canary.weights.canary}}%
     slack:
       attachments: |
         [{
@@ -29,11 +28,6 @@ data:
               "value": "{{.rollout.status.currentPodHash}}",
               "short": true
             },
-            {
-              "title": "Canary Weight",
-              "value": "{{.rollout.status.canary.weights.canary}}%",
-              "short": true
-            }
           ]
         }]
 
