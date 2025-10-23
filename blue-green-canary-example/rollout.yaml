@@ -2,6 +2,13 @@ apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   name: blue-green-canary
+  annotations:
+    notifications.argoproj.io/subscribe.on-rollout-started.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-completed.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-paused.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-aborted.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-updated: argocd
+    notifications.argoproj.io/subscribe.on-analysis-run-error.slack: argocd
 spec:
   replicas: 4
   workloadRef:
@@ -12,15 +19,15 @@ spec:
     canary:
       stableService: blue-green-canary-active
       canaryService: blue-green-canary-preview
-      analysis:
-        templates:
-        - templateName: blue-green-canary
-          args:
-          - name: url
-            value: http://blue-green-canary-preview.default.svc.cluster.local
       maxSurge: "25%"
       maxUnavailable: 0
       abortScaleDownDelaySeconds: 300
+      analysis:
+        templates:
+          - templateName: blue-green-canary
+        args:
+          - name: url
+            value: http://blue-green-canary-preview.default.svc.cluster.local:80
       steps:
         - setWeight: 5
         - pause: { duration: 10m }
