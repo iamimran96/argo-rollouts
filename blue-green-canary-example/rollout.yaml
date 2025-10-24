@@ -5,6 +5,10 @@ metadata:
   annotations:
     notifications.argoproj.io/subscribe.on-rollout-canary-started.slack: argocd
     notifications.argoproj.io/subscribe.on-rollout-promoted.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-completed.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-step-completed.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-updated.slack: argocd
+    notifications.argoproj.io/subscribe.on-scaling-replica-set.slack: argocd
     #notifications.argoproj.io/subscribe.on-rollout-updated.slack: argocd
     #notifications.argoproj.io/subscribe.on-rollout-paused.slack: argocd
     #notifications.argoproj.io/subscribe.on-rollout-completed.slack: argocd
