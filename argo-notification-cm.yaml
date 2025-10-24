@@ -105,12 +105,14 @@ data:
   trigger.on-rollout-canary-started: |
     - when: rollout.status.phase in ['Progressing'] && rollout.status.currentStepIndex == 0
       send: [rollout-canary-started]
-
   trigger.on-rollout-promoted: |
     - when: rollout.status.phase in ['Healthy']
       send: [rollout-promoted]
   trigger.on-rollout-degraded: |
     - when: rollout.status.phase == 'Degraded'
+      send: [rollout-degraded]
+  trigger.on-rollout-degraded-analysis: |
+    - when: rollout.status.canarycurrentBackgroundAnalysisRunStatus.status == 'Failed'
       send: [rollout-degraded]
 
 kind: ConfigMap

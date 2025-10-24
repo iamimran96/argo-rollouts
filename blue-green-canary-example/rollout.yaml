@@ -6,6 +6,7 @@ metadata:
     notifications.argoproj.io/subscribe.on-rollout-canary-started.slack: argocd
     notifications.argoproj.io/subscribe.on-rollout-promoted.slack: argocd
     notifications.argoproj.io/subscribe.on-rollout-degraded.slack: argocd
+    notifications.argoproj.io/subscribe.on-rollout-degraded-analysis.slack: argocd
 spec:
   replicas: 4
   workloadRef:
