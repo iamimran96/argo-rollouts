@@ -146,8 +146,8 @@ data:
     - when: rollout.status.phase in ['Progressing'] && rollout.status.currentStepIndex == 0
       send: [rollout-canary-started]
   trigger.on-rollout-promoted: |
-    - when: rollout.status.phase in ['Healthy']
-      oncePer: rollout.status.currentPodHash
+    - when: rollout.status.phase == 'Healthy' && rollout.status.stableRS == rollout.status.currentPodHash
+      oncePer: rollout.status.stableRS
       send: [rollout-promoted]
   trigger.on-rollout-degraded: |
     - when: rollout.status.phase == 'Degraded'
