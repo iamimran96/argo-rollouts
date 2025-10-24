@@ -2,7 +2,6 @@ apiVersion: v1
 data:
   service.slack: |
     token: $slack-token
-
   template.rollout-canary-started: |
     message: |
       🚀 Canary rollout started for {{.rollout.metadata.name}} in namespace {{.rollout.metadata.namespace}}
@@ -36,16 +35,15 @@ data:
             }
           ]
         }]
-
   template.rollout-promoted: |
     message: |
-      ✅ Rollout {{.rollout.metadata.name}} fully promoted to stable!
+      🎉 Rollout {{.rollout.metadata.name}} fully promoted to stable!
       All canary steps completed successfully.
       New revision: {{.rollout.status.currentPodHash}}
     slack:
       attachments: |
         [{
-          "title": "✅ Canary Promoted to Stable",
+          "title": "🎉 Canary Promoted to Stable",
           "color": "good",
           "fields": [
             {
@@ -70,15 +68,12 @@ data:
             }
           ]
         }]
-
   trigger.on-rollout-canary-started: |
-    - when: rollout.status.phase in ['Progressing'] and rollout.status.currentStepIndex == 0
-      oncePer: rollout.metadata.generation
+    - when: rollout.status.phase in ['Progressing'] && rollout.status.currentStepIndex == 0
       send: [rollout-canary-started]
 
   trigger.on-rollout-promoted: |
-    - when: rollout.status.phase == 'Healthy' and rollout.status.stableRS == rollout.status.currentPodHash
-      oncePer: rollout.metadata.generation
+    - when: rollout.status.phase == 'Healthy'
       send: [rollout-promoted]
 
 kind: ConfigMap
