@@ -24,7 +24,7 @@ spec:
           - templateName: blue-green-canary
         args:
           - name: url
-            value: http://blue-green-canary-preview.default.svc.cluster.local:80
+            value: http://blue-green-canary-preview.default.svc.cluster.local:8000
       steps:
         - setWeight: 5
         - pause: { duration: 1m }
