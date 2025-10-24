@@ -96,7 +96,47 @@ data:
             },
             {
               "title": "Message",
-              "value": "{{.rollout.status.message}}",
+              "value": {{.rollout.status.message | toJson}},
+              "short": false
+            }
+          ]
+        }]
+
+  template.rollout-analysis-run-failed: |
+    message: |
+      🚨 Analysis run failed for {{.rollout.metadata.name}}
+      Analysis: {{.rollout.status.canary.currentBackgroundAnalysisRunStatus.name}}
+      Status: {{.rollout.status.canary.currentBackgroundAnalysisRunStatus.status}}
+      Message: {{.rollout.status.canary.currentBackgroundAnalysisRunStatus.message}}
+    slack:
+      attachments: |
+        [{
+          "title": "🚨 Analysis Run Failed",
+          "color": "danger",
+          "fields": [
+            {
+              "title": "Rollout",
+              "value": "{{.rollout.metadata.name}}",
+              "short": true
+            },
+            {
+              "title": "Namespace",
+              "value": "{{.rollout.metadata.namespace}}",
+              "short": true
+            },
+            {
+              "title": "Analysis Run",
+              "value": "{{.rollout.status.canary.currentBackgroundAnalysisRunStatus.name}}",
+              "short": true
+            },
+            {
+              "title": "Status",
+              "value": "{{.rollout.status.canary.currentBackgroundAnalysisRunStatus.status}}",
+              "short": true
+            },
+            {
+              "title": "Failure Message",
+              "value": {{.rollout.status.canary.currentBackgroundAnalysisRunStatus.message | toJson}},
               "short": false
             }
           ]
@@ -107,13 +147,15 @@ data:
       send: [rollout-canary-started]
   trigger.on-rollout-promoted: |
     - when: rollout.status.phase in ['Healthy']
+      oncePer: rollout.status.currentPodHash
       send: [rollout-promoted]
   trigger.on-rollout-degraded: |
     - when: rollout.status.phase == 'Degraded'
       send: [rollout-degraded]
   trigger.on-rollout-degraded-analysis: |
-    - when: rollout.status.canarycurrentBackgroundAnalysisRunStatus.status == 'Failed'
-      send: [rollout-degraded]
+    - when: rollout.status.canary.currentBackgroundAnalysisRunStatus.status in ['Failed', 'Error']
+      oncePer: rollout.status.canary.currentBackgroundAnalysisRunStatus.name
+      send: [rollout-analysis-run-failed]
 
 kind: ConfigMap
 metadata:
