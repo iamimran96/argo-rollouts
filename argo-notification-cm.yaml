@@ -2,7 +2,6 @@ apiVersion: v1
 data:
   service.slack: |
     token: $slack-token
-
   template.rollout-canary-started: |
     message: |
       🚀 Canary rollout started for {{.rollout.metadata.name}} in namespace {{.rollout.metadata.namespace}}
@@ -36,7 +35,6 @@ data:
             }
           ]
         }]
-
   template.rollout-promoted: |
     message: |
       🎉 Rollout {{.rollout.metadata.name}} fully promoted to stable!
@@ -70,16 +68,16 @@ data:
             }
           ]
         }]
-
-  template.rollout-analysis-run-successful: |
+  template.rollout-degraded: |
     message: |
-      ✅ Analysis run completed successfully for {{.rollout.metadata.name}}
-      Analysis: {{.rollout.status.canary.currentBackgroundAnalysisRunStatus.name}}
+      ❌ Rollout {{.rollout.metadata.name}} is in a degraded state
+      Phase: {{.rollout.status.phase}}
+      Message: {{.rollout.status.message}}
     slack:
       attachments: |
         [{
-          "title": "✅ Analysis Run Successful",
-          "color": "good",
+          "title": "❌ Rollout Degraded",
+          "color": "danger",
           "fields": [
             {
               "title": "Rollout",
@@ -92,27 +90,28 @@ data:
               "short": true
             },
             {
-              "title": "Analysis Run",
-              "value": "{{.rollout.status.canary.currentBackgroundAnalysisRunStatus.name}}",
+              "title": "Phase",
+              "value": "{{.rollout.status.phase}}",
               "short": true
             },
             {
-              "title": "Status",
-              "value": "{{.rollout.status.canary.currentBackgroundAnalysisRunStatus.status}}",
-              "short": true
+              "title": "Message",
+              "value": "{{.rollout.status.message}}",
+              "short": false
             }
           ]
         }]
 
   trigger.on-rollout-canary-started: |
     - when: rollout.status.phase in ['Progressing'] && rollout.status.currentStepIndex == 0
-      oncePer: rollout.status.currentPodHash
       send: [rollout-canary-started]
 
   trigger.on-rollout-promoted: |
-    - when: rollout.status.phase == 'Healthy'
-      oncePer: rollout.status.stableRS
+    - when: rollout.status.phase in ['Healthy']
       send: [rollout-promoted]
+  trigger.on-rollout-degraded: |
+    - when: rollout.status.phase == 'Degraded'
+      send: [rollout-degraded]
 
 kind: ConfigMap
 metadata:
