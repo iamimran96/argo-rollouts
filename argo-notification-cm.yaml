@@ -35,6 +35,45 @@ data:
             }
           ]
         }]
+  template.rollout-canary-success: |
+    message: |
+      ✅ Canary deployment succeeded for {{.rollout.metadata.name}}!
+      All canary steps completed successfully.
+      Current canary weight: {{.rollout.status.canary.weights.canary}}%
+      Ready for promotion to stable.
+    slack:
+      attachments: |
+        [{
+          "title": "✅ Canary Deployment Successful",
+          "color": "good",
+          "fields": [
+            {
+              "title": "Rollout",
+              "value": "{{.rollout.metadata.name}}",
+              "short": true
+            },
+            {
+              "title": "Namespace",
+              "value": "{{.rollout.metadata.namespace}}",
+              "short": true
+            },
+            {
+              "title": "Canary Revision",
+              "value": "{{.rollout.status.currentPodHash}}",
+              "short": true
+            },
+            {
+              "title": "Canary Weight",
+              "value": "{{.rollout.status.canary.weights.canary}}%",
+              "short": true
+            },
+            {
+              "title": "Image",
+              "value": "{{(index .rollout.spec.template.spec.containers 0).image}}",
+              "short": false
+            }
+          ]
+        }]
   template.rollout-promoted: |
     message: |
       🎉 Rollout {{.rollout.metadata.name}} fully promoted to stable!
@@ -142,12 +181,46 @@ data:
           ]
         }]
 
+  template.rollout-analysis-run-success: |
+    message: |
+      ✅ Analysis run succeeded for {{.rollout.metadata.name}}
+      Analysis: {{.rollout.status.canary.currentBackgroundAnalysisRunStatus.name}}
+      Status: {{.rollout.status.canary.currentBackgroundAnalysisRunStatus.status}}
+      Canary deployment is healthy and progressing!
+    slack:
+      attachments: |
+        [{
+          "title": "✅ Analysis Run Successful",
+          "color": "good",
+          "fields": [
+            {
+              "title": "Rollout",
+              "value": "{{.rollout.metadata.name}}",
+              "short": true
+            },
+            {
+              "title": "Namespace",
+              "value": "{{.rollout.metadata.namespace}}",
+              "short": true
+            },
+            {
+              "title": "Analysis Run",
+              "value": "{{.rollout.status.canary.currentBackgroundAnalysisRunStatus.name}}",
+              "short": true
+            },
+            {
+              "title": "Status",
+              "value": "{{.rollout.status.canary.currentBackgroundAnalysisRunStatus.status}}",
+              "short": true
+            }
+          ]
+        }]
+
   trigger.on-rollout-canary-started: |
     - when: rollout.status.phase in ['Progressing'] && rollout.status.currentStepIndex == 0
       send: [rollout-canary-started]
   trigger.on-rollout-promoted: |
     - when: rollout.status.phase == 'Healthy' && rollout.status.stableRS == rollout.status.currentPodHash
-      oncePer: rollout.status.stableRS
       send: [rollout-promoted]
   trigger.on-rollout-degraded: |
     - when: rollout.status.phase == 'Degraded'
@@ -156,6 +229,10 @@ data:
     - when: rollout.status.canary.currentBackgroundAnalysisRunStatus.status in ['Failed', 'Error']
       oncePer: rollout.status.canary.currentBackgroundAnalysisRunStatus.name
       send: [rollout-analysis-run-failed]
+  trigger.on-rollout-analysis-success: |
+    - when: rollout.status.canary.currentBackgroundAnalysisRunStatus.status == 'Successful'
+      oncePer: rollout.status.canary.currentBackgroundAnalysisRunStatus.name
+      send: [rollout-analysis-run-success]
 
 kind: ConfigMap
 metadata:
